@@ -5,22 +5,22 @@ namespace Src\Game\Domain\Entities;
 use DomainException;
 use Ramsey\Uuid\Uuid;
 use Src\Game\Domain\ValueObjects\Card;
+use Src\Game\Domain\ValueObjects\HandId;
 use Src\Game\Domain\ValueObjects\HandValue;
 
 class Hand
 {
-    private string $id;
-    private HandValue $value;
-
     /** @var array<Card> */
     private array $cards = [];
     public function __construct(
+        private HandId $id,
+        private HandValue $value
     ){
-        $this->id = Uuid::uuid4()->toString();
+        $this->id = new HandId(Uuid::uuid4()->toString());
         $this->value = new HandValue();
     }
 
-    public function getCard(Card $card): void
+    public function receiveCard(Card $card): void
     {
         if ($this->value->isBust()){
             throw new DomainException("Cant take card when it bast");
@@ -38,9 +38,14 @@ class Hand
         return $this->id;
     }
 
-    public function value(): int
+    public function value(): HandValue
     {
-        return $this->value->score();
+        return $this->value;
+    }
+
+    public function cards(): array
+    {
+        return $this->cards;
     }
 
 }
