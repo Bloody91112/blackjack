@@ -36,4 +36,34 @@ class CardTest extends TestCase
 
         $this->assertFalse($firstCard->equalsTo($secondCard));
     }
+
+    public function test_it_returns_suit(): void
+    {
+        $card = new Card(
+            Rank::from(Rank::SIX),
+            Suit::from(Suit::CLUBS)
+        );
+
+        $this->assertInstanceOf(Suit::class, $card->suit());
+    }
+
+    public function test_it_returns_rank(): void
+    {
+        $card = new Card(
+            Rank::from(Rank::SIX),
+            Suit::from(Suit::CLUBS)
+        );
+
+        $this->assertInstanceOf(Rank::class, $card->rank());
+    }
+
+    public function test_it_creates_correct_hash_key(): void
+    {
+        $card = new Card(
+            Rank::from(Rank::SIX),
+            Suit::from(Suit::CLUBS)
+        );
+
+        $this->assertSame($card->hashKey(),  $card->suit()->value() . '_' . $card->rank()->value());
+    }
 }

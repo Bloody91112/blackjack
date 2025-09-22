@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\Game\Domain\ValueObjects;
+namespace Src\Game\Domain\ValueObjects\Ids;
 
 use Src\Share\Domain\ValueObjectId;
 

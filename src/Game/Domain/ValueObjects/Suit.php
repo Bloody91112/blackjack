@@ -7,10 +7,10 @@ use InvalidArgumentException;
 final class Suit
 {
 
-    public const CLUBS = 'Clubs';
-    public const HEARTS = 'Hearts';
-    public const DIAMONDS = 'Diamonds';
-    public const SPADES = 'Spades';
+    public const CLUBS = 'clubs';
+    public const HEARTS = 'hearts';
+    public const DIAMONDS = 'diamonds';
+    public const SPADES = 'spades';
 
     private const ALLOWED = [
         self::CLUBS,
@@ -43,5 +43,14 @@ final class Suit
     public function __toString(): string
     {
         return $this->value;
+    }
+
+    public static function all(): array
+    {
+        $all = [];
+        foreach (self::ALLOWED as $value){
+            $all[] = new self($value);
+        }
+        return $all;
     }
 }

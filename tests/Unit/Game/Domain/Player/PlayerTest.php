@@ -9,11 +9,11 @@ use Src\Game\Domain\Entities\Hand;
 use Src\Game\Domain\Entities\Player;
 use Src\Game\Domain\Enum\PlayerResult;
 use Src\Game\Domain\Enum\PlayerState;
-use Src\Game\Domain\ValueObjects\BetId;
-use Src\Game\Domain\ValueObjects\HandId;
 use Src\Game\Domain\ValueObjects\HandValue;
+use Src\Game\Domain\ValueObjects\Ids\BetId;
+use Src\Game\Domain\ValueObjects\Ids\HandId;
+use Src\Game\Domain\ValueObjects\Ids\PlayerId;
 use Src\Game\Domain\ValueObjects\Money;
-use Src\Game\Domain\ValueObjects\PlayerId;
 
 class PlayerTest extends TestCase
 {

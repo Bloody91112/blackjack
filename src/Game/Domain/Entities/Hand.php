@@ -5,8 +5,8 @@ namespace Src\Game\Domain\Entities;
 use DomainException;
 use Ramsey\Uuid\Uuid;
 use Src\Game\Domain\ValueObjects\Card;
-use Src\Game\Domain\ValueObjects\HandId;
 use Src\Game\Domain\ValueObjects\HandValue;
+use Src\Game\Domain\ValueObjects\Ids\HandId;
 
 class Hand
 {

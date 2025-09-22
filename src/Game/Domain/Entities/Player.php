@@ -5,7 +5,7 @@ namespace Src\Game\Domain\Entities;
 use LogicException;
 use Src\Game\Domain\Enum\PlayerResult;
 use Src\Game\Domain\Enum\PlayerState;
-use Src\Game\Domain\ValueObjects\PlayerId;
+use Src\Game\Domain\ValueObjects\Ids\PlayerId;
 
 final class Player
 {

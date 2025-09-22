@@ -25,6 +25,11 @@ final readonly class Card
         return "{$this->rank} of {$this->suit}";
     }
 
+    public function hashKey(): string
+    {
+        return $this->suit()->value() . '_' . $this->rank()->value();
+    }
+
     public function suit(): Suit
     {
         return $this->suit;

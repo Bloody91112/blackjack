@@ -5,7 +5,7 @@ namespace Tests\Unit\Game\Domain\Bet;
 use PHPUnit\Framework\TestCase;
 use Src\Game\Domain\Entities\Bet;
 use Src\Game\Domain\Enum\BetStatus;
-use Src\Game\Domain\ValueObjects\BetId;
+use Src\Game\Domain\ValueObjects\Ids\BetId;
 use Src\Game\Domain\ValueObjects\Money;
 
 class BetTest extends TestCase

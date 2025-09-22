@@ -3,7 +3,7 @@
 namespace Src\Game\Domain\Entities;
 
 use Src\Game\Domain\Enum\BetStatus;
-use Src\Game\Domain\ValueObjects\BetId;
+use Src\Game\Domain\ValueObjects\Ids\BetId;
 use Src\Game\Domain\ValueObjects\Money;
 
 class Bet

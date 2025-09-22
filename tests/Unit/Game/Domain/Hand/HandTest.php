@@ -5,8 +5,8 @@ namespace Game\Domain\Hand;
 use PHPUnit\Framework\TestCase;
 use Src\Game\Domain\Entities\Hand;
 use Src\Game\Domain\ValueObjects\Card;
-use Src\Game\Domain\ValueObjects\HandId;
 use Src\Game\Domain\ValueObjects\HandValue;
+use Src\Game\Domain\ValueObjects\Ids\HandId;
 use Src\Game\Domain\ValueObjects\Rank;
 use Src\Game\Domain\ValueObjects\Suit;
 

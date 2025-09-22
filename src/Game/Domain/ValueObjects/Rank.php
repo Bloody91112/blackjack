@@ -15,10 +15,10 @@ final class Rank
     public const EIGHT = "8";
     public const NINE = "9";
     public const TEN = "10";
-    public const JACK = "Jack";
-    public const QUEEN = "Queen";
-    public const KING = "King";
-    public const ACE = "Ace";
+    public const JACK = "jack";
+    public const QUEEN = "queen";
+    public const KING = "king";
+    public const ACE = "ace";
 
     private const ALLOWED = [
         self::TWO,
@@ -91,5 +91,14 @@ final class Rank
     public function isAce(): bool
     {
         return $this->isAce;
+    }
+
+    public static function all(): array
+    {
+        $all = [];
+        foreach (self::ALLOWED as $value){
+            $all[] = new self($value);
+        }
+        return $all;
     }
 }

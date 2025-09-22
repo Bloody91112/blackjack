@@ -31,4 +31,10 @@ class SuitTest extends TestCase
         $this->assertFalse($first->equalsTo($second));
     }
 
+    public function test_it_returns_all_and_unique_values(): void
+    {
+        $this->assertSame(count(Suit::all()), count(array_unique(Suit::all())));
+        $this->assertSame(count(Suit::all()), 4);
+    }
+
 }
