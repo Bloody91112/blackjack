@@ -2,6 +2,7 @@
 
 namespace Src\Game\Domain\Entities;
 
+use LogicException;
 use Src\Game\Domain\Enum\TableState;
 use Src\Game\Domain\Factories\GameFactory;
 use Src\Game\Domain\ValueObjects\Ids\TableId;
@@ -22,22 +23,21 @@ class Table
     {
         foreach ($this->players as $player){
             if ($player->id()->equals($newPlayer->id())){
-                throw new \LogicException("Player " . $player->id()->value() . " already at the table");
+                throw new LogicException("Player " . $player->id()->value() . " already at the table");
             }
         }
-
-        $this->players[] = $player;
+        $newPlayer->joinTable();
+        $this->players[] = $newPlayer;
     }
 
     private function startGame(): void
     {
         if ($this->game !== null){
-            throw new \LogicException("Game already started");
+            throw new LogicException("Game already started");
         }
 
         $this->state = TableState::GameStarted;
         $this->game = (new GameFactory)->create($this->players, $this->shoe);
-        $this->game->start();
-        $this->game->offerToPlaceABet();
+        $this->game->betStage();
     }
 }

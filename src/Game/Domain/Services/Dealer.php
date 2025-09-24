@@ -24,7 +24,7 @@ class Dealer
         }
 
         $game->dealerHand()->receiveCard($game->shoe()->draw());
-        $game->playersTurns();
+        $game->playersTurnsStage();
     }
 
 

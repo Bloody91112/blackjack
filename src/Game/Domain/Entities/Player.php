@@ -13,7 +13,7 @@ final class Player
     private ?Hand $hand = null;
     private ?Bet $bet = null;
 
-    private PlayerState $state = PlayerState::Watching;
+    private PlayerState $state = PlayerState::Free;
     private ?PlayerResult $result = null;
 
     public function __construct(
@@ -22,17 +22,15 @@ final class Player
     )
     {}
 
-    public function join(): void
+    public function joinTable(): void
     {
-        if ($this->state !== PlayerState::Watching){
-            throw new LogicException("Player already in the game.");
-        }
-        $this->state = PlayerState::JoinedTheGame;
+        $this->state = PlayerState::SittingAtTheTable;
     }
 
-    public function offerToPlaceABet(): void
+
+    public function startBetting(): void
     {
-        if ($this->state !== PlayerState::JoinedTheGame){
+        if ($this->state !== PlayerState::SittingAtTheTable){
             throw new LogicException("Player can't start betting in state $this->state");
         }
         $this->state = PlayerState::ChoosingABet;
@@ -43,9 +41,14 @@ final class Player
         $this->state = PlayerState::Active;
     }
 
-    public function finishTurn(): void
+    public function isActive(): bool
     {
-        $this->state = PlayerState::Finished;
+        return $this->state === PlayerState::Active;
+    }
+
+    public function isStanding(): bool
+    {
+        return $this->state === PlayerState::Standing;
     }
 
     public function stand(): void
@@ -60,14 +63,8 @@ final class Player
         if ($this->hand->value()->isBlackjack()){
             $this->finished(PlayerResult::Blackjack);
         } else if ($this->hand->value()->isBust()){
-            $this->bust();
+            $this->finished(PlayerResult::Bust);
         }
-    }
-
-    public function bust(): void
-    {
-        $this->state = PlayerState::Busted;
-        $this->result = PlayerResult::Lost;
     }
 
     public function finished(PlayerResult $result): void
@@ -78,7 +75,17 @@ final class Player
 
     public function lost(): void
     {
-        $this->result = PlayerResult::Lost;
+        $this->finished(PlayerResult::Lost);
+    }
+
+    public function won(): void
+    {
+        $this->finished(PlayerResult::Won);
+    }
+
+    public function push(): void
+    {
+        $this->finished(PlayerResult::Push);
     }
 
     public function assignHand(Hand $hand): void
@@ -101,10 +108,6 @@ final class Player
     {
         if ($this->state !== PlayerState::ChoosingABet){
             throw new LogicException("Player can't place a bet in state $this->state");
-        }
-
-        if ($this->bet !== null){
-            throw new LogicException("Bet already placed.");
         }
 
         $this->bet = $bet;
@@ -137,6 +140,11 @@ final class Player
     public function result(): PlayerResult
     {
         return $this->result;
+    }
+
+    public function hasBlackjack(): bool
+    {
+        return $this->hand()->value()->isBlackjack();
     }
 
 

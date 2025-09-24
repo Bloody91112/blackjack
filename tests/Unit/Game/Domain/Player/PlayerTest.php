@@ -85,16 +85,16 @@ class PlayerTest extends TestCase
 
     public function test_it_accept_correct_state_when_joining_game(): void
     {
-        $this->player->join();
+        $this->player->joinTheGame();
         $this->assertSame($this->player->state(), PlayerState::JoinedTheGame);
     }
 
     public function test_cant_join_game_with_incorrect_status(): void
     {
-        $this->player->join();
+        $this->player->joinTheGame();
 
         $this->expectException(LogicException::class);
-        $this->player->join();
+        $this->player->joinTheGame();
     }
 
     public function test_it_accepts_correct_status_and_result_on_bust(): void

@@ -7,11 +7,12 @@ use Src\Game\Domain\Enum\GameState;
 use Src\Game\Domain\Enum\PlayerState;
 use Src\Game\Domain\ValueObjects\Card;
 use Src\Game\Domain\ValueObjects\Ids\GameId;
+use Src\Game\Domain\ValueObjects\Ids\PlayerId;
 
 class Game
 {
     private GameState $state;
-    private int $currentPlayerIndex = 0;
+    private ?int $currentPlayerIndex = null;
 
     public function __construct(
         private GameId $id,
@@ -27,41 +28,39 @@ class Game
         $this->state = GameState::Created;
     }
 
-    public function start(): void
-    {
-        $this->state = GameState::Started;
-        foreach ($this->players as $player){
-            $player->join();
-        }
-    }
-
-    public function playersBet(): void
+    public function betStage(): void
     {
         $this->state = GameState::Betting;
         foreach ($this->players as $player){
-            $player->offerToPlaceABet();
+            $player->startBetting();
         }
     }
 
     public function currentPlayer(): Player
     {
+        if ($this->currentPlayerIndex === null){
+            throw new \DomainException("There is no current player assigned.");
+        }
         return $this->players[$this->currentPlayerIndex];
     }
 
     public function nextPlayer(): void
     {
-        $this->currentPlayer()->finishTurn();
+        if ($this->currentPlayer()->isActive()){
+            throw new LogicException("Previous player has not made a turn yet.");
+        }
 
         $this->currentPlayerIndex++;
 
         if ($this->currentPlayerIndex < count($this->players)) {
-            $this->currentPlayer()->startTurn();
+            $this->startTurn();
         } else {
+            $this->currentPlayerIndex = null;
             $this->state = GameState::DealerTurn;
         }
     }
 
-    public function playersTurns(): void
+    public function playersTurnsStage(): void
     {
         $this->state = GameState::PlayersTurn;
         $this->currentPlayerIndex = 0;
@@ -70,7 +69,7 @@ class Game
 
     public function startTurn(): void
     {
-        $this->players[$this->currentPlayerIndex]->startTurn();
+        $this->currentPlayer()->startTurn();
     }
 
     public function playerHit(): void
@@ -85,32 +84,26 @@ class Game
         $this->nextPlayer();
     }
 
-    public function dealerHit(): void
+    public function placeDealerCard(): void
     {
         $card = $this->shoe->draw();
         $this->dealerHand->receiveCard($card);
+    }
 
-        if ($this->dealerHand->value()->score() < 17){
-            $this->dealerHit();
-        }
+    public function placeBet(PlayerId $playerId, Bet $bet): void
+    {
+        $this->findPlayer($playerId)->placeBet($bet);
+    }
 
-        if ($this->dealerHand->value()->score() < 21){
-            // сравниваются карты игроков и дилера
-        }
-
-        if ($this->dealerHand->value()->isBlackjack()){
-            foreach ($this->players as $player){
-                if ($player->hand()->value()->isBlackjack()){
-                    //... игрок проигрывает
-                } else {
-                    $player->lost();
-                }
+    public function findPlayer(PlayerId $playerId): Player
+    {
+        foreach ($this->players as $player){
+            if ($player->id()->equals($playerId)){
+                return $player;
             }
         }
 
-        if ($this->dealerHand->value()->score() > 21){
-            // все оставшиеся игроки выигрывают
-        }
+        throw new LogicException("There is no player with id {$playerId} at the game");
     }
 
     public function state(): GameState
@@ -128,6 +121,12 @@ class Game
         return $this->players;
     }
 
+    public function standingPlayers(): array
+    {
+        return array_filter($this->players, fn(Player $player) => $player->isStanding());
+    }
+
+
     public function id(): GameId
     {
         return $this->id;
@@ -136,6 +135,11 @@ class Game
     public function dealerHand(): Hand
     {
         return $this->dealerHand;
+    }
+
+    public function dealerScore(): int
+    {
+        return $this->dealerHand()->value()->score();
     }
 
 }
