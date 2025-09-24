@@ -5,6 +5,7 @@ namespace Src\Game\Domain\Enum;
 enum GameState: string
 {
     case Created = "created";
+    case Started = "started";
     case Betting = "betting";
     case Dealing = "dealing";
     case PlayersTurn = "players_turn";

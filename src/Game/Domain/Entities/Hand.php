@@ -48,4 +48,9 @@ class Hand
         return $this->cards;
     }
 
+    public function hasAce(): bool
+    {
+        return $this->value->hasAce();
+    }
+
 }

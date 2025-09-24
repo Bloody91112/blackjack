@@ -3,9 +3,7 @@
 namespace Src\Game\Domain\Entities;
 
 use Src\Game\Domain\Enum\TableState;
-use Src\Game\Domain\ValueObjects\HandValue;
-use Src\Game\Domain\ValueObjects\Ids\GameId;
-use Src\Game\Domain\ValueObjects\Ids\HandId;
+use Src\Game\Domain\Factories\GameFactory;
 use Src\Game\Domain\ValueObjects\Ids\TableId;
 
 class Table
@@ -20,12 +18,15 @@ class Table
         private array $players = []
     ){}
 
-    private function join(Player $player): void
+    private function join(Player $newPlayer): void
     {
-        if (isset($this->players[$player->id()->value()])){
-            throw new \LogicException("Player " . $player->id()->value() . " already at the table");
+        foreach ($this->players as $player){
+            if ($player->id()->equals($newPlayer->id())){
+                throw new \LogicException("Player " . $player->id()->value() . " already at the table");
+            }
         }
-        $this->players[$player->id()->value()] = $player;
+
+        $this->players[] = $player;
     }
 
     private function startGame(): void
@@ -34,11 +35,9 @@ class Table
             throw new \LogicException("Game already started");
         }
 
-        $this->game = new Game(
-            GameId::generate(),
-            $this->shoe,
-            new Hand(HandId::generate(), new HandValue()),
-            $this->players
-        );
+        $this->state = TableState::GameStarted;
+        $this->game = (new GameFactory)->create($this->players, $this->shoe);
+        $this->game->start();
+        $this->game->offerToPlaceABet();
     }
 }

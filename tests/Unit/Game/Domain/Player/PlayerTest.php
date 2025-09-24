@@ -86,7 +86,7 @@ class PlayerTest extends TestCase
     public function test_it_accept_correct_state_when_joining_game(): void
     {
         $this->player->join();
-        $this->assertSame($this->player->state(), PlayerState::Active);
+        $this->assertSame($this->player->state(), PlayerState::JoinedTheGame);
     }
 
     public function test_cant_join_game_with_incorrect_status(): void

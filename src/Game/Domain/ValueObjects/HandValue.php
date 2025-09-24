@@ -84,6 +84,16 @@ class HandValue
         return true;
     }
 
+    public function hasAce(): bool
+    {
+        foreach ($this->cards as $card){
+            if ($card->rank()->isAce()){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function __toString(): string
     {
         return $this->score;

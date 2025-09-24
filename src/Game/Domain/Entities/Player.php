@@ -5,6 +5,7 @@ namespace Src\Game\Domain\Entities;
 use LogicException;
 use Src\Game\Domain\Enum\PlayerResult;
 use Src\Game\Domain\Enum\PlayerState;
+use Src\Game\Domain\ValueObjects\Card;
 use Src\Game\Domain\ValueObjects\Ids\PlayerId;
 
 final class Player
@@ -26,12 +27,41 @@ final class Player
         if ($this->state !== PlayerState::Watching){
             throw new LogicException("Player already in the game.");
         }
+        $this->state = PlayerState::JoinedTheGame;
+    }
+
+    public function offerToPlaceABet(): void
+    {
+        if ($this->state !== PlayerState::JoinedTheGame){
+            throw new LogicException("Player can't start betting in state $this->state");
+        }
+        $this->state = PlayerState::ChoosingABet;
+    }
+
+    public function startTurn(): void
+    {
         $this->state = PlayerState::Active;
+    }
+
+    public function finishTurn(): void
+    {
+        $this->state = PlayerState::Finished;
     }
 
     public function stand(): void
     {
         $this->state = PlayerState::Standing;
+    }
+
+    public function hit(Card $card): void
+    {
+        $this->hand->receiveCard($card);
+
+        if ($this->hand->value()->isBlackjack()){
+            $this->finished(PlayerResult::Blackjack);
+        } else if ($this->hand->value()->isBust()){
+            $this->bust();
+        }
     }
 
     public function bust(): void
@@ -44,6 +74,11 @@ final class Player
     {
         $this->state = PlayerState::Finished;
         $this->result = $result;
+    }
+
+    public function lost(): void
+    {
+        $this->result = PlayerResult::Lost;
     }
 
     public function assignHand(Hand $hand): void
@@ -64,10 +99,16 @@ final class Player
 
     public function placeBet(Bet $bet): void
     {
+        if ($this->state !== PlayerState::ChoosingABet){
+            throw new LogicException("Player can't place a bet in state $this->state");
+        }
+
         if ($this->bet !== null){
             throw new LogicException("Bet already placed.");
         }
+
         $this->bet = $bet;
+        $this->state = PlayerState::PlacedABet;
     }
 
     public function bet(): Bet
