@@ -28,7 +28,7 @@ class Game
         $this->state = GameState::Created;
     }
 
-    public function betStage(): void
+    public function betStart(): void
     {
         $this->state = GameState::Betting;
         foreach ($this->players as $player){
@@ -140,6 +140,26 @@ class Game
     public function dealerScore(): int
     {
         return $this->dealerHand()->value()->score();
+    }
+
+    private function collectPlayersCards(): array
+    {
+        $cards = [];
+        foreach ($this->players as $player){
+            $cards[] = $player->hand()->returnCards();
+        }
+        return $cards;
+    }
+
+    public function finish(): void
+    {
+        $cards = [...$this->collectPlayersCards(), $this->dealerHand->returnCards()];
+
+        foreach ($cards as $dealerCard){
+            $this->shoe->collect($dealerCard);
+        }
+
+        $this->state = GameState::Finished;
     }
 
 }

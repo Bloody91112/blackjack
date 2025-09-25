@@ -27,6 +27,4 @@ class Dealer
         $game->playersTurnsStage();
     }
 
-
-
 }

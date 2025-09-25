@@ -33,6 +33,13 @@ class Hand
         $this->value = $this->value->recount($card);
     }
 
+    public function returnCards(): array
+    {
+        $cards = $this->cards;
+        $this->cards = [];
+        return $cards;
+    }
+
     public function id(): string
     {
         return $this->id;

@@ -3,7 +3,6 @@
 namespace Src\Game\Domain\Entities;
 
 use LogicException;
-use Src\Game\Domain\Enum\TableState;
 use Src\Game\Domain\Factories\GameFactory;
 use Src\Game\Domain\ValueObjects\Ids\TableId;
 
@@ -14,7 +13,6 @@ class Table
     public function __construct(
         private TableId $id,
         private Shoe $shoe,
-        private TableState $state = TableState::Waiting,
         /** @var array<Player> $players */
         private array $players = []
     ){}
@@ -33,11 +31,16 @@ class Table
     private function startGame(): void
     {
         if ($this->game !== null){
-            throw new LogicException("Game already started");
+            throw new LogicException("Previous game is not finished.");
         }
 
-        $this->state = TableState::GameStarted;
         $this->game = (new GameFactory)->create($this->players, $this->shoe);
-        $this->game->betStage();
+        $this->game->betStart();
+    }
+
+    private function finishGame(): void
+    {
+        $this->game->finish();
+        $this->shoe = $this->game->shoe();
     }
 }
