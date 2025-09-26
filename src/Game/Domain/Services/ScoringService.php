@@ -3,6 +3,7 @@
 namespace Src\Game\Domain\Services;
 
 use Src\Game\Domain\Entities\Game;
+use Src\Game\Domain\Entities\Player;
 
 class ScoringService
 {
@@ -14,25 +15,26 @@ class ScoringService
 
         if ($game->dealerScore() < 21){
             foreach ($game->standingPlayers() as $player){
+                /** @var Player $player */
                 if ($player->hand()->value()->score() < $game->dealerScore()){
-                    $player->lost();
+                    $player->lose();
                 } elseif ($player->hand()->value()->score() === $game->dealerScore()){
                     $player->push();
                 } else {
-                    $player->won();
+                    $player->win();
                 }
             }
         }
 
         if ($game->dealerScore() === 21){
             foreach ($game->standingPlayers() as $player){
-                $player->lost();
+                $player->lose();
             }
         }
 
         if ($game->dealerScore() > 21){
             foreach ($game->standingPlayers() as $player){
-                $player->won();
+                $player->win();
             }
         }
     }

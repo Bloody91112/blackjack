@@ -19,13 +19,12 @@ class HandTest extends TestCase
     {
         parent::setUp();
         $this->cards = [
-            new Card(Rank::from(Rank::ACE), Suit::from(Suit::CLUBS)),
-            new Card(Rank::from(Rank::EIGHT), Suit::from(Suit::HEARTS)),
-            new Card(Rank::from(Rank::TEN), Suit::from(Suit::DIAMONDS)),
+            new Card(Rank::ace(), Suit::clubs()),
+            new Card(Rank::eight(), Suit::hearts()),
+            new Card(Rank::ten(), Suit::diamonds()),
         ];
-        $handId = HandId::generate();
-        $handValue = new HandValue();
-        $this->hand =  new Hand($handId, $handValue);
+
+        $this->hand = new Hand(HandId::generate(), new HandValue());
     }
 
     public function test_it_correctly_adds_cards(): void
@@ -50,5 +49,19 @@ class HandTest extends TestCase
         $this->assertTrue($handCards[0]->equalsTo($this->cards[0]));
         $this->assertTrue($handCards[1]->equalsTo($this->cards[1]));
         $this->assertTrue($handCards[2]->equalsTo($this->cards[2]));
+    }
+
+    public function test_it_indicates_ace_correctly(): void
+    {
+        $this->hand->receiveCard($this->cards[0]);
+        $this->hand->receiveCard($this->cards[1]);
+        $this->hand->receiveCard($this->cards[2]);
+        $this->assertTrue($this->hand->hasAce());
+    }
+
+    public function test_it_doesnt_indicates_ace_correctly(): void
+    {
+        $this->hand->receiveCard($this->cards[1]);
+        $this->assertFalse($this->hand->hasAce());
     }
 }

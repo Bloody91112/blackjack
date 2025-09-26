@@ -12,8 +12,7 @@ class Bet
         private BetId $id,
         private Money $money,
         private BetStatus $status = BetStatus::Pending
-    )
-    {}
+    ){}
 
     public function win(): void
     {
@@ -23,6 +22,11 @@ class Bet
     public function lose(): void
     {
         $this->status = BetStatus::Lost;
+    }
+
+    public function push(): void
+    {
+        $this->status = BetStatus::Push;
     }
 
     public function money(): Money

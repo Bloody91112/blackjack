@@ -55,11 +55,10 @@ class ShoeTest extends TestCase
     public function test_it_collects_a_card_correctly(): void
     {
         $card = $this->shoe->draw();
-        $cardOther = $this->shoe->draw();
+        $this->shoe->draw();
 
         $this->shoe->collect($card);
-        $this->shoe->collect($cardOther);
 
-        $this->assertSame(count($this->shoe->cards()), self::DECKS * Deck::STANDARD_SIZE);
+        $this->assertSame(count($this->shoe->cards()), (self::DECKS * Deck::STANDARD_SIZE) - 1);
     }
 }

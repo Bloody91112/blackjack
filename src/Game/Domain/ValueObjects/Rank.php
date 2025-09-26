@@ -52,25 +52,16 @@ final class Rank
         self::TWO => 2,
     ];
 
-    private bool $isAce = false;
-
     public function __construct(private readonly string $value)
     {
         if (!in_array($value, self::ALLOWED)){
             throw new InvalidArgumentException("Invalid rank: $value");
         }
-
-        $this->isAce = $value === self::ACE;
     }
 
     public function equalsTo(self $other): bool
     {
         return $this->value === $other->value;
-    }
-
-    public static function from(string $value): self
-    {
-        return new self($value);
     }
 
     public function value(): string
@@ -90,7 +81,7 @@ final class Rank
 
     public function isAce(): bool
     {
-        return $this->isAce;
+        return $this->value === self::ACE;
     }
 
     public static function all(): array
@@ -101,4 +92,70 @@ final class Rank
         }
         return $all;
     }
+
+    public static function two(): self
+    {
+        return new self(self::TWO);
+    }
+
+    public static function three(): self
+    {
+        return new self(self::THREE);
+    }
+
+    public static function four(): self
+    {
+        return new self(self::FOUR);
+    }
+
+    public static function five(): self
+    {
+        return new self(self::FIVE);
+    }
+
+    public static function six(): self
+    {
+        return new self(self::SIX);
+    }
+
+    public static function seven(): self
+    {
+        return new self(self::SEVEN);
+    }
+
+    public static function eight(): self
+    {
+        return new self(self::EIGHT);
+    }
+
+    public static function nine(): self
+    {
+        return new self(self::NINE);
+    }
+
+    public static function ten(): self
+    {
+        return new self(self::TEN);
+    }
+
+    public static function jack(): self
+    {
+        return new self(self::JACK);
+    }
+
+    public static function queen(): self
+    {
+        return new self(self::QUEEN);
+    }
+
+    public static function king(): self
+    {
+        return new self(self::KING);
+    }
+
+    public static function ace(): self
+    {
+        return new self(self::ACE);
+    }
+
 }

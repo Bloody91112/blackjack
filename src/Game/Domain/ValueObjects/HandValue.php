@@ -9,30 +9,24 @@ class HandValue
     private const BLACKJACK_VALUE = 21;
     private const HARD_HAND_ACE_DIFF = 10;
 
-    private bool $isBust = false;
-    private bool $isBlackjack = false;
-
-    private int $score = 0;
     public function __construct(
         /** @var array<Card> $cards*/
-        private array $cards = []
+        private readonly array $cards = []
     ){
         foreach ($cards as $card){
             if (!($card instanceof Card)){
                 throw new InvalidArgumentException("Wrong card type");
             }
         }
-        $this->calculate();
     }
 
-    private function calculate(): void
+    private function calculateScore(): int
     {
         $aces = 0;
         $sum = 0;
 
         foreach ($this->cards as $card){
-            $rankValue = $card->rank()->baseValue();
-            $sum += $this->score + $rankValue;
+            $sum += $card->rank()->baseValue();
             if ($card->rank()->isAce()){
                 $aces++;
             }
@@ -43,30 +37,27 @@ class HandValue
             $aces--;
         }
 
-        $this->score = $sum;
-
-        $this->isBust = $this->score > self::BLACKJACK_VALUE;
-        $this->isBlackjack = $this->score === self::BLACKJACK_VALUE;
+        return $sum;
     }
 
-    public function recount(Card $card): self
+    public function add(Card $card): self
     {
         return new self ([...$this->cards, $card]);
     }
 
     public function score(): int
     {
-        return $this->score;
+        return $this->calculateScore();
     }
 
     public function isBlackjack(): bool
     {
-        return $this->isBlackjack;
+        return $this->calculateScore() === self::BLACKJACK_VALUE;
     }
 
     public function isBust(): bool
     {
-        return $this->isBust;
+        return $this->calculateScore() > self::BLACKJACK_VALUE;
     }
 
     public function equalsTo(self $other): bool
@@ -96,7 +87,7 @@ class HandValue
 
     public function __toString(): string
     {
-        return $this->score;
+        return $this->calculateScore();
     }
 
 }

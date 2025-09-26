@@ -1,12 +1,9 @@
 <?php
 
-namespace Tests\Unit\Game\Domain\Shoe;
+namespace Tests\Unit\Game\Domain\Deck;
 
-use DomainException;
 use PHPUnit\Framework\TestCase;
 use Src\Game\Domain\Factories\DeckFactory;
-use Src\Game\Domain\ValueObjects\Card;
-use Src\Game\Domain\ValueObjects\Deck;
 use Src\Game\Domain\ValueObjects\Rank;
 use Src\Game\Domain\ValueObjects\Suit;
 

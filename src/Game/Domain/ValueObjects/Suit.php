@@ -30,11 +30,6 @@ final class Suit
         return $this->value === $other->value;
     }
 
-    public static function from(string $value): self
-    {
-        return new self($value);
-    }
-
     public function value(): string
     {
         return $this->value;
@@ -52,5 +47,25 @@ final class Suit
             $all[] = new self($value);
         }
         return $all;
+    }
+
+    public static function clubs(): self
+    {
+        return new self(self::CLUBS);
+    }
+
+    public static function hearts(): self
+    {
+        return new self(self::HEARTS);
+    }
+
+    public static function diamonds(): self
+    {
+        return new self(self::DIAMONDS);
+    }
+
+    public static function spades(): self
+    {
+        return new self(self::SPADES);
     }
 }

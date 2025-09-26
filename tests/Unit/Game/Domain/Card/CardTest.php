@@ -14,56 +14,35 @@ class CardTest extends TestCase
 
     public function test_two_same_cards_are_equal(): void
     {
-        $rank = Rank::from(Rank::FIVE);
-        $suit = Suit::from(Suit::CLUBS);
-        $firstCard = new Card($rank, $suit);
-        $secondCard = new Card($rank, $suit);
+        $firstCard = new Card(Rank::five(), Suit::clubs());
+        $secondCard = new Card(Rank::five(), Suit::clubs());
 
         $this->assertTrue($firstCard->equalsTo($secondCard));
     }
 
     public function test_two_different_cards_are_not_equal(): void
     {
-        $firstCard = new Card(
-            Rank::from(Rank::SIX),
-            Suit::from(Suit::CLUBS)
-        );
-
-        $secondCard = new Card(
-            Rank::from(Rank::EIGHT),
-            Suit::from(Suit::HEARTS)
-        );
+        $firstCard = new Card(Rank::six(), Suit::clubs());
+        $secondCard = new Card(Rank::eight(), Suit::hearts());
 
         $this->assertFalse($firstCard->equalsTo($secondCard));
     }
 
     public function test_it_returns_suit(): void
     {
-        $card = new Card(
-            Rank::from(Rank::SIX),
-            Suit::from(Suit::CLUBS)
-        );
-
+        $card = new Card(Rank::six(), Suit::clubs());
         $this->assertInstanceOf(Suit::class, $card->suit());
     }
 
     public function test_it_returns_rank(): void
     {
-        $card = new Card(
-            Rank::from(Rank::SIX),
-            Suit::from(Suit::CLUBS)
-        );
-
+        $card = new Card(Rank::six(), Suit::clubs());
         $this->assertInstanceOf(Rank::class, $card->rank());
     }
 
     public function test_it_creates_correct_hash_key(): void
     {
-        $card = new Card(
-            Rank::from(Rank::SIX),
-            Suit::from(Suit::CLUBS)
-        );
-
+        $card = new Card(Rank::six(), Suit::clubs());
         $this->assertSame($card->hashKey(),  $card->suit()->value() . '_' . $card->rank()->value());
     }
 }

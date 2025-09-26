@@ -2,6 +2,7 @@
 
 namespace Src\Game\Domain\Entities;
 
+use DomainException;
 use LogicException;
 use Src\Game\Domain\Enum\PlayerResult;
 use Src\Game\Domain\Enum\PlayerState;
@@ -31,14 +32,35 @@ final class Player
     public function startBetting(): void
     {
         if ($this->state !== PlayerState::SittingAtTheTable){
-            throw new LogicException("Player can't start betting in state $this->state");
+            throw new LogicException("Player can't start betting in state {$this->state->value}");
         }
         $this->state = PlayerState::ChoosingABet;
     }
 
+    public function placeBet(Bet $bet): void
+    {
+        if ($this->state !== PlayerState::ChoosingABet){
+            throw new LogicException("Player can't place a bet in state {$this->state->value}");
+        }
+
+        $this->bet = $bet;
+        $this->state = PlayerState::PlacedABet;
+    }
+
     public function startTurn(): void
     {
+        if ($this->state !== PlayerState::PlacedABet){
+            throw new LogicException("Player can't start turn in state {$this->state->value}");
+        }
         $this->state = PlayerState::Active;
+    }
+
+    public function stand(): void
+    {
+        if ($this->state !== PlayerState::Active){
+            throw new LogicException("Player can't stand in state {$this->state->value}");
+        }
+        $this->state = PlayerState::Standing;
     }
 
     public function isActive(): bool
@@ -49,11 +71,6 @@ final class Player
     public function isStanding(): bool
     {
         return $this->state === PlayerState::Standing;
-    }
-
-    public function stand(): void
-    {
-        $this->state = PlayerState::Standing;
     }
 
     public function hit(Card $card): void
@@ -71,14 +88,20 @@ final class Player
     {
         $this->state = PlayerState::Finished;
         $this->result = $result;
+
+        match ($result){
+            PlayerResult::Won, PlayerResult::Blackjack => $this->bet()->win(),
+            PlayerResult::Lost, PlayerResult::Bust => $this->bet()->lose(),
+            PlayerResult::Push => $this->bet()->push(),
+        };
     }
 
-    public function lost(): void
+    public function lose(): void
     {
         $this->finished(PlayerResult::Lost);
     }
 
-    public function won(): void
+    public function win(): void
     {
         $this->finished(PlayerResult::Won);
     }
@@ -104,16 +127,6 @@ final class Player
         return $this->hand;
     }
 
-    public function placeBet(Bet $bet): void
-    {
-        if ($this->state !== PlayerState::ChoosingABet){
-            throw new LogicException("Player can't place a bet in state $this->state");
-        }
-
-        $this->bet = $bet;
-        $this->state = PlayerState::PlacedABet;
-    }
-
     public function bet(): Bet
     {
         if ($this->bet === null){
@@ -137,14 +150,9 @@ final class Player
         return $this->state;
     }
 
-    public function result(): PlayerResult
+    public function result(): ?PlayerResult
     {
         return $this->result;
-    }
-
-    public function hasBlackjack(): bool
-    {
-        return $this->hand()->value()->isBlackjack();
     }
 
 

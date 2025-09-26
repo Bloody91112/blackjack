@@ -30,7 +30,7 @@ class Hand
             throw new DomainException("Cant take card when Blackjack");
         }
         $this->cards[] = $card;
-        $this->value = $this->value->recount($card);
+        $this->value = $this->value->add($card);
     }
 
     public function returnCards(): array

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Game\Domain\Shoe;
+namespace Tests\Unit\Game\Domain\Deck;
 
 use DomainException;
 use PHPUnit\Framework\TestCase;

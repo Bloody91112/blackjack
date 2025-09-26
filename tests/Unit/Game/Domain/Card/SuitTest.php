@@ -14,21 +14,17 @@ class SuitTest extends TestCase
     public function test_it_throws_exception_on_incorrect_value(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        Suit::from("Wrong");
+        new Suit("Wrong");
     }
 
     public function test_two_same_suits_are_equal(): void
     {
-        $first = Suit::from(Suit::CLUBS);
-        $second = Suit::from(Suit::CLUBS);
-        $this->assertTrue($first->equalsTo($second));
+        $this->assertTrue(Suit::clubs()->equalsTo(Suit::clubs()));
     }
 
     public function test_two_different_suits_are_not_equal(): void
     {
-        $first = Suit::from(Suit::HEARTS);
-        $second = Suit::from(Suit::CLUBS);
-        $this->assertFalse($first->equalsTo($second));
+        $this->assertFalse(Suit::hearts()->equalsTo(Suit::clubs()));
     }
 
     public function test_it_returns_all_and_unique_values(): void

@@ -20,10 +20,6 @@ class BetTest extends TestCase
     public function test_creates_correctly(): void
     {
         $this->assertInstanceOf(Bet::class, $this->bet);
-    }
-
-    public function test_it_creates_with_correct_status(): void
-    {
         $this->assertSame($this->bet->status(), BetStatus::Pending);
     }
 
@@ -37,5 +33,16 @@ class BetTest extends TestCase
     {
         $this->bet->win();
         $this->assertSame($this->bet->status(), BetStatus::Won);
+    }
+
+    public function test_it_accept_correct_status_on_push(): void
+    {
+        $this->bet->push();
+        $this->assertSame($this->bet->status(), BetStatus::Push);
+    }
+
+    public function test_it_returns_money(): void
+    {
+        $this->assertInstanceOf(Money::class, $this->bet->money());
     }
 }
