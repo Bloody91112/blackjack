@@ -12,10 +12,6 @@ use Src\Game\Domain\ValueObjects\Ids\PlayerId;
 
 class GameFactoryTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
 
     public function test_it_creates_a_correct_game(): void
     {

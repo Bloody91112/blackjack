@@ -15,16 +15,13 @@ class Dealer
     {
         foreach ($game->players() as $player){
             $player->assignHand(new Hand(HandId::generate(), new HandValue()));
-            $hand = $player->hand();
-            $firstCard = $game->shoe()->draw();
-            $hand->receiveCard($firstCard);
 
-            $secondCard = $game->shoe()->draw();
-            $hand->receiveCard($secondCard);
+            $player->hand()->receiveCard($game->shoe()->draw());
+
+            $player->hand()->receiveCard($game->shoe()->draw());
         }
 
         $game->dealerHand()->receiveCard($game->shoe()->draw());
-        $game->playersTurnsStage();
     }
 
 }

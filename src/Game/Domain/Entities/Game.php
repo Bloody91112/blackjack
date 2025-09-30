@@ -2,6 +2,7 @@
 
 namespace Src\Game\Domain\Entities;
 
+use DomainException;
 use LogicException;
 use Src\Game\Domain\Enum\GameState;
 use Src\Game\Domain\Enum\PlayerState;
@@ -36,10 +37,31 @@ class Game
         }
     }
 
+    public function playersTurnsStage(): void
+    {
+        foreach ($this->players as $player){
+            if ($player->state() !== PlayerState::PlacedABet){
+                throw new DomainException("Cant start players turns, player {$player->id()->value()} is not placed a bet");
+            }
+
+            if (count($player->hand()->cards()) !== 2){
+                throw new DomainException("Cant start players turns, player {$player->id()->value()} doesnt have 2 cards");
+            }
+        }
+
+        if (count($this->dealerHand->cards()) !== 1){
+            throw new DomainException("Cant start players turns, dealer doesnt have card");
+        }
+
+        $this->state = GameState::PlayersTurn;
+        $this->currentPlayerIndex = 0;
+        $this->startTurn();
+    }
+
     public function currentPlayer(): Player
     {
         if ($this->currentPlayerIndex === null){
-            throw new \DomainException("There is no current player assigned.");
+            throw new DomainException("There is no current player assigned.");
         }
         return $this->players[$this->currentPlayerIndex];
     }
@@ -58,13 +80,6 @@ class Game
             $this->currentPlayerIndex = null;
             $this->state = GameState::DealerTurn;
         }
-    }
-
-    public function playersTurnsStage(): void
-    {
-        $this->state = GameState::PlayersTurn;
-        $this->currentPlayerIndex = 0;
-        $this->startTurn();
     }
 
     public function startTurn(): void
