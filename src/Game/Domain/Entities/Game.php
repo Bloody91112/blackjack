@@ -6,7 +6,6 @@ use DomainException;
 use LogicException;
 use Src\Game\Domain\Enum\GameState;
 use Src\Game\Domain\Enum\PlayerState;
-use Src\Game\Domain\ValueObjects\Card;
 use Src\Game\Domain\ValueObjects\Ids\GameId;
 use Src\Game\Domain\ValueObjects\Ids\PlayerId;
 
@@ -87,14 +86,24 @@ class Game
         $this->currentPlayer()->startTurn();
     }
 
-    public function playerHit(): void
+    public function playerHit(PlayerId $playerId): void
     {
+        if (!$this->currentPlayer()->id()->equals($playerId)){
+            throw new DomainException("Its not player {$playerId->value()} turn.");
+        }
         $card = $this->shoe->draw();
         $this->currentPlayer()->hit($card);
+
+        if ($this->currentPlayer()->state() !== PlayerState::Active){
+            $this->nextPlayer();
+        }
     }
 
-    public function playerStand(): void
+    public function playerStand(PlayerId $playerId): void
     {
+        if (!$this->currentPlayer()->id()->equals($playerId)){
+            throw new DomainException("Its not player {$playerId->value()} turn.");
+        }
         $this->currentPlayer()->stand();
         $this->nextPlayer();
     }
@@ -136,6 +145,7 @@ class Game
         return $this->players;
     }
 
+    /** @return array<Player> */
     public function standingPlayers(): array
     {
         return array_filter($this->players, fn(Player $player) => $player->isStanding());

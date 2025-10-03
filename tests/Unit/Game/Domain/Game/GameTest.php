@@ -2,30 +2,24 @@
 
 namespace Tests\Unit\Game\Domain\Game;
 
-use DomainException;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use Src\Game\Domain\Entities\Bet;
 use Src\Game\Domain\Entities\Game;
-use Src\Game\Domain\Entities\Hand;
 use Src\Game\Domain\Entities\Player;
-use Src\Game\Domain\Enum\GameState;
-use Src\Game\Domain\Enum\PlayerState;
 use Src\Game\Domain\Factories\DeckFactory;
 use Src\Game\Domain\Factories\GameFactory;
 use Src\Game\Domain\Factories\ShoeFactory;
 use Src\Game\Domain\Services\Dealer;
-use Src\Game\Domain\ValueObjects\HandValue;
 use Src\Game\Domain\ValueObjects\Ids\BetId;
-use Src\Game\Domain\ValueObjects\Ids\HandId;
 use Src\Game\Domain\ValueObjects\Ids\PlayerId;
 use Src\Game\Domain\ValueObjects\Money;
 
 class GameTest extends TestCase
 {
 
-    private Game $game;
-    private Dealer $dealer;
+    protected Game $game;
+    protected Dealer $dealer;
 
     protected function setUp(): void
     {
@@ -49,7 +43,8 @@ class GameTest extends TestCase
 
     public function test_it_found_player_correctly(): void
     {
-        $foundPlayer = $this->game->findPlayer($this->firstGamePlayer()->id());
+        $firstPlayer = $this->game->players()[array_key_first($this->game->players())];
+        $foundPlayer = $this->game->findPlayer($firstPlayer->id());
         $this->assertInstanceOf(Player::class, $foundPlayer);
     }
 
@@ -60,8 +55,56 @@ class GameTest extends TestCase
         $this->game->findPlayer($player->id());
     }
 
-    private function firstGamePlayer(): Player
+    public function test_standing_players_are_real_standing_players(): void
+    {
+        $this->playersTurnsStep();
+        $firstPlayer = $this->firstGamePlayer();
+        while ($this->game->currentPlayer()->id()->equals($firstPlayer->id())){
+            $this->game->playerHit($this->game->currentPlayer()->id());
+        }
+
+        $secondPlayer = $this->game->currentPlayer();
+        while ($this->game->currentPlayer()->id()->equals($secondPlayer->id())){
+            $this->game->playerHit($this->game->currentPlayer()->id());
+        }
+
+        $thirdPlayer = $this->game->currentPlayer();
+        $this->game->playerStand($thirdPlayer->id());
+
+        $this->assertCount(1, $this->game->standingPlayers());
+        $this->assertTrue($this->game->standingPlayers()[array_key_first($this->game->standingPlayers())]->id()->equals($thirdPlayer->id()));
+    }
+
+
+
+
+
+
+
+    protected function betStartStep(): void
+    {
+        foreach ($this->game->players() as $player) {
+            $player->joinTable();
+        }
+        $this->game->betStart();
+
+    }
+
+    protected function playersTurnsStep(): void
+    {
+        $this->betStartStep();
+        foreach ($this->game->players() as $player) {
+            $bet = new Bet(BetId::generate(), new Money(100));
+            $this->game->placeBet($player->id(), $bet);
+        }
+        $dealer = new Dealer();
+        $dealer->dealInitialCards($this->game);
+        $this->game->playersTurnsStage();
+    }
+
+    protected function firstGamePlayer(): Player
     {
         return $this->game->players()[array_key_first($this->game->players())];
     }
+
 }
