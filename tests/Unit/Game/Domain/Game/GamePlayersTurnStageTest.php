@@ -18,7 +18,7 @@ class GamePlayersTurnStageTest extends GameTest
 
     public function test_stage_creates_correctly(): void
     {
-        $this->playersTurnsStep();
+        self::playersTurnsStep($this->game);
         $this->assertSame($this->game->state(), GameState::PlayersTurn);
         $this->assertTrue($this->game->currentPlayer()->id()->equals($this->firstGamePlayer()->id()));
         $this->assertSame($this->game->currentPlayer()->state(), PlayerState::Active);
@@ -32,14 +32,14 @@ class GamePlayersTurnStageTest extends GameTest
 
     public function test_cant_start_stage_while_all_players_wont_place_a_bet(): void
     {
-        $this->betStartStep();
+        self::betStartStep($this->game);
         $this->expectException(DomainException::class);
         $this->game->playersTurnsStage();
     }
 
     public function test_cant_start_stage_while_all_players_wont_receive_cards(): void
     {
-        $this->betStartStep();
+        self::betStartStep($this->game);
         foreach ($this->game->players() as $player) {
             $bet = new Bet(BetId::generate(), new Money(100));
             $this->game->placeBet($player->id(), $bet);
@@ -52,7 +52,7 @@ class GamePlayersTurnStageTest extends GameTest
 
     public function test_cant_start_stage_while_dealer_wont_receive_card(): void
     {
-        $this->betStartStep();
+        self::betStartStep($this->game);
         foreach ($this->game->players() as $player) {
             $bet = new Bet(BetId::generate(), new Money(100));
             $this->game->placeBet($player->id(), $bet);
@@ -67,7 +67,7 @@ class GamePlayersTurnStageTest extends GameTest
 
     public function test_other_player_cant_make_turn(): void
     {
-        $this->playersTurnsStep();
+        self::playersTurnsStep($this->game);
         $otherPlayer = $this->game->players()[array_key_last($this->game->players())];
         $this->expectException(DomainException::class);
         $this->game->playerStand($otherPlayer->id());
@@ -75,7 +75,7 @@ class GamePlayersTurnStageTest extends GameTest
 
     public function test_current_player_can_make_turn(): void
     {
-        $this->playersTurnsStep();
+        self::playersTurnsStep($this->game);
         $firstPlayer = $this->firstGamePlayer();
         $this->game->playerStand($firstPlayer->id());
         $this->assertSame($firstPlayer->state(), PlayerState::Standing);
@@ -83,7 +83,7 @@ class GamePlayersTurnStageTest extends GameTest
 
     public function test_current_player_can_hit(): void
     {
-        $this->playersTurnsStep();
+        self::playersTurnsStep($this->game);
         $firstPlayer = $this->firstGamePlayer();
         $this->game->playerHit($firstPlayer->id());
         $this->assertSame(count($this->game->currentPlayer()->hand()->cards()),3);
@@ -91,7 +91,7 @@ class GamePlayersTurnStageTest extends GameTest
 
     public function test_current_player_is_changing_after_his_turn_end_with_hit(): void
     {
-        $this->playersTurnsStep();
+        self::playersTurnsStep($this->game);
         for ($i = 0; $i < 10; $i++) {
             $firstPlayer = $this->firstGamePlayer();
             while ($this->game->currentPlayer()->id()->equals($firstPlayer->id())){
@@ -102,9 +102,9 @@ class GamePlayersTurnStageTest extends GameTest
 
     }
 
-    public function test_current_player_can_stand_and_next_player_will_be_active(): void
+    public function test_current_player_can_stand_and_next_player_will_become_active(): void
     {
-        $this->playersTurnsStep();
+        self::playersTurnsStep($this->game);
         $firstPlayer = $this->firstGamePlayer();
         $this->game->playerStand($firstPlayer->id());
         $this->assertSame($firstPlayer->state(), PlayerState::Standing);
@@ -113,13 +113,17 @@ class GamePlayersTurnStageTest extends GameTest
 
     public function test_after_last_player_turn_starts_dealer_stage(): void
     {
-        $this->playersTurnsStep();
-        $this->game->playerStand($this->game->currentPlayer()->id());
-        $this->game->playerStand($this->game->currentPlayer()->id());
-        $this->game->playerStand($this->game->currentPlayer()->id());
+        self::dealerTurnStep($this->game);
         $this->assertSame($this->game->state(), GameState::DealerTurn);
     }
 
-
+    public function test_players_and_dealer_are_receiving_cards(): void
+    {
+        self::playersTurnsStep($this->game);
+        foreach ($this->game->players() as $player){
+            $this->assertCount(2, $player->hand()->cards());
+        }
+        $this->assertCount(1, $this->game->dealerHand()->cards());
+    }
 
 }

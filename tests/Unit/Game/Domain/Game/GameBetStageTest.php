@@ -14,7 +14,7 @@ class GameBetStageTest extends GameTest
 
     public function test_bet_stage_starts_correctly(): void
     {
-        $this->betStartStep();
+        self::betStartStep($this->game);
         foreach ($this->game->players() as $player){
             $this->assertSame($player->state(), PlayerState::ChoosingABet);
         }
@@ -23,7 +23,7 @@ class GameBetStageTest extends GameTest
 
     public function test_it_places_player_bet_correctly(): void
     {
-        $this->betStartStep();
+        self::betStartStep($this->game);
         $bet = new Bet(BetId::generate(), new Money(100));
         $player = $this->firstGamePlayer();
         $this->game->placeBet($player->id(), $bet);

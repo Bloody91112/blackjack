@@ -25,6 +25,12 @@ class GameTest extends TestCase
     {
         parent::setUp();
 
+        $this->game = self::makeTestGame();
+        $this->dealer = new Dealer();
+    }
+
+    public static function makeTestGame(): Game
+    {
         $shoe = (new ShoeFactory(new DeckFactory))->create(3);
         $players = [
             new Player(PlayerId::generate(), "John"),
@@ -32,13 +38,13 @@ class GameTest extends TestCase
             new Player(PlayerId::generate(), "Alex"),
         ];
 
-        $this->game = (new GameFactory)->create($players, $shoe);
+        $game = (new GameFactory)->create($players, $shoe);
 
-        foreach ($this->game->players() as $player){
+        foreach ($game->players() as $player){
             $player->joinTable();
         }
 
-        $this->dealer = new Dealer();
+        return $game;
     }
 
     public function test_it_found_player_correctly(): void
@@ -57,7 +63,7 @@ class GameTest extends TestCase
 
     public function test_standing_players_are_real_standing_players(): void
     {
-        $this->playersTurnsStep();
+        self::playersTurnsStep($this->game);
         $firstPlayer = $this->firstGamePlayer();
         while ($this->game->currentPlayer()->id()->equals($firstPlayer->id())){
             $this->game->playerHit($this->game->currentPlayer()->id());
@@ -75,31 +81,51 @@ class GameTest extends TestCase
         $this->assertTrue($this->game->standingPlayers()[array_key_first($this->game->standingPlayers())]->id()->equals($thirdPlayer->id()));
     }
 
-
-
-
-
-
-
-    protected function betStartStep(): void
+    public function test_dealer_can_receive_card(): void
     {
-        foreach ($this->game->players() as $player) {
-            $player->joinTable();
-        }
-        $this->game->betStart();
-
+        self::dealerTurnStep($this->game);
+        $this->assertCount(1, $this->game->dealerHand()->cards());
+        $this->game->placeDealerCard();
+        $this->assertCount(2, $this->game->dealerHand()->cards());
     }
 
-    protected function playersTurnsStep(): void
+    public function test_it_correctly_returns_dealer_score(): void
     {
-        $this->betStartStep();
-        foreach ($this->game->players() as $player) {
+        $this->assertIsNumeric($this->game->dealerScore());
+    }
+
+
+
+
+
+    public static function betStartStep(Game $game): void
+    {
+        $game->betStart();
+    }
+
+    public static function playersTurnsStep(Game $game): void
+    {
+        self::betStartStep($game);
+        foreach ($game->players() as $player) {
             $bet = new Bet(BetId::generate(), new Money(100));
-            $this->game->placeBet($player->id(), $bet);
+            $game->placeBet($player->id(), $bet);
         }
         $dealer = new Dealer();
-        $dealer->dealInitialCards($this->game);
-        $this->game->playersTurnsStage();
+        $dealer->dealInitialCards($game);
+        $game->playersTurnsStage();
+    }
+
+    public static function dealerTurnStep(Game $game): void
+    {
+        self::playersTurnsStep($game);
+
+        $firstGamePlayer = $game->players()[array_key_first($game->players())];
+        while ($game->currentPlayer()->id()->equals($firstGamePlayer->id())){
+            $game->playerHit($game->currentPlayer()->id());
+        }
+
+        $game->playerStand($game->currentPlayer()->id());
+        $game->playerStand($game->currentPlayer()->id());
     }
 
     protected function firstGamePlayer(): Player

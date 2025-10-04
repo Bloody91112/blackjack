@@ -140,6 +140,7 @@ class Game
         return $this->shoe;
     }
 
+    /** @return array<Player> */
     public function players(): array
     {
         return $this->players;
