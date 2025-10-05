@@ -114,6 +114,13 @@ class Game
         $this->dealerHand->receiveCard($card);
     }
 
+    public function placeOtherDealerCards(): void
+    {
+        while ($this->dealerScore() < 17){
+            $this->placeDealerCard();
+        }
+    }
+
     public function placeBet(PlayerId $playerId, Bet $bet): void
     {
         $this->findPlayer($playerId)->placeBet($bet);

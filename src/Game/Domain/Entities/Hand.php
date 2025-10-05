@@ -37,6 +37,7 @@ class Hand
     {
         $cards = $this->cards;
         $this->cards = [];
+        $this->value = new HandValue();
         return $cards;
     }
 

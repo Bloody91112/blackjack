@@ -8,10 +8,6 @@ class ScoringService
 {
     public function calculateResult(Game $game): void
     {
-        while ($game->dealerScore() < 17){
-            $game->placeDealerCard();
-        }
-
         if ($game->dealerScore() < 21){
             foreach ($game->standingPlayers() as $player){
                 if ($player->hand()->value()->score() < $game->dealerScore()){

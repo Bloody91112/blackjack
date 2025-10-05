@@ -25,4 +25,6 @@ class GameFactoryTest extends TestCase
         $this->assertSame($game->state(), GameState::Created);
         $this->assertCount(2, $game->players());
     }
+
+
 }
