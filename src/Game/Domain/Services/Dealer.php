@@ -17,7 +17,6 @@ class Dealer
             $player->assignHand(new Hand(HandId::generate(), new HandValue()));
 
             $player->hand()->receiveCard($game->shoe()->draw());
-
             $player->hand()->receiveCard($game->shoe()->draw());
         }
 

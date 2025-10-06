@@ -26,6 +26,7 @@ class Game
         }
 
         $this->state = GameState::Created;
+
     }
 
     public function betStart(): void
@@ -53,37 +54,49 @@ class Game
         }
 
         $this->state = GameState::PlayersTurn;
-        $this->currentPlayerIndex = 0;
-        $this->startTurn();
+
+        $this->checkPlayersBlackjack();
+        $this->nextPlayerTurn();
     }
 
     public function currentPlayer(): Player
     {
         if ($this->currentPlayerIndex === null){
-            throw new DomainException("There is no current player assigned.");
+            throw new LogicException("Current player not assigned");
         }
+
         return $this->players[$this->currentPlayerIndex];
     }
 
-    public function nextPlayer(): void
+    public function nextPlayerTurn(): void
     {
-        if ($this->currentPlayer()->isActive()){
-            throw new LogicException("Previous player has not made a turn yet.");
+        if ($this->state() !== GameState::PlayersTurn){
+            throw new LogicException("Cant assign next player. Wrong game state: {$this->state()->value}");
         }
 
-        $this->currentPlayerIndex++;
 
-        if ($this->currentPlayerIndex < count($this->players)) {
-            $this->startTurn();
+        if ($this->currentPlayerIndex !== null) {
+            if ($this->currentPlayer()->isActive()) {
+                throw new LogicException("Previous player has not finished his turn yet.");
+            }
+            $startIndex = $this->currentPlayerIndex + 1;
         } else {
-            $this->currentPlayerIndex = null;
-            $this->state = GameState::DealerTurn;
+            $startIndex = 0;
         }
-    }
 
-    public function startTurn(): void
-    {
-        $this->currentPlayer()->startTurn();
+        for ($i = $startIndex; $i < count($this->players); $i++) {
+            $player = $this->players[$i];
+
+            if ($player->state() === PlayerState::Finished) {
+                continue;
+            }
+
+            $this->currentPlayerIndex = $i;
+            $this->currentPlayer()->startTurn();
+            return;
+        }
+
+        $this->state = GameState::DealerTurn;
     }
 
     public function playerHit(PlayerId $playerId): void
@@ -91,11 +104,11 @@ class Game
         if (!$this->currentPlayer()->id()->equals($playerId)){
             throw new DomainException("Its not player {$playerId->value()} turn.");
         }
-        $card = $this->shoe->draw();
-        $this->currentPlayer()->hit($card);
+
+        $this->currentPlayer()->hit($this->shoe->draw());
 
         if ($this->currentPlayer()->state() !== PlayerState::Active){
-            $this->nextPlayer();
+            $this->nextPlayerTurn();
         }
     }
 
@@ -105,7 +118,7 @@ class Game
             throw new DomainException("Its not player {$playerId->value()} turn.");
         }
         $this->currentPlayer()->stand();
-        $this->nextPlayer();
+        $this->nextPlayerTurn();
     }
 
     public function placeDealerCard(): void
@@ -193,6 +206,15 @@ class Game
         }
 
         $this->state = GameState::Finished;
+    }
+
+    private function checkPlayersBlackjack(): void
+    {
+        foreach ($this->players() as $player){
+            if ($player->hand()->hasBlackjack()){
+                $player->finishWithBlackjack();
+            }
+        }
     }
 
 }

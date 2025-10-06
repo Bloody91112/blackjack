@@ -89,7 +89,7 @@ class GamePlayersTurnStageTest extends TestCase
         $game = GameFactory::makeTestGameInPlayersTurnStage();
         $firstPlayer = $game->players()[array_key_first($game->players())];
         $game->playerHit($firstPlayer->id());
-        $this->assertSame(count($game->currentPlayer()->hand()->cards()),3);
+        $this->assertSame(count($firstPlayer->hand()->cards()),3);
     }
 
     public function test_current_player_is_changing_after_his_turn_end_with_hit(): void

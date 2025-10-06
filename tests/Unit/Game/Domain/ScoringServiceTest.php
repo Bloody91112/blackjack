@@ -54,6 +54,7 @@ class ScoringServiceTest extends TestCase
     {
         $game = GameFactory::makeTestGameInDealerTurnStage();
         $game->dealerHand()->returnCards();
+
         $game->dealerHand()->receiveCard(new Card(Rank::ten(), Suit::clubs()));
         $game->dealerHand()->receiveCard(new Card(Rank::ten(), Suit::clubs()));
         $game->dealerHand()->receiveCard(new Card(Rank::ten(), Suit::clubs()));

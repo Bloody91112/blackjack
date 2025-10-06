@@ -28,6 +28,11 @@ final class Player
         $this->state = PlayerState::SittingAtTheTable;
     }
 
+    public function finishWithBlackjack(): void
+    {
+        $this->finished(PlayerResult::Blackjack);
+    }
+
 
     public function startBetting(): void
     {

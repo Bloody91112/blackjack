@@ -61,4 +61,9 @@ class Hand
         return $this->value->hasAce();
     }
 
+    public function hasBlackjack(): bool
+    {
+        return $this->value->isBlackjack();
+    }
+
 }

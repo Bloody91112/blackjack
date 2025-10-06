@@ -7,6 +7,7 @@ use Src\Game\Domain\Entities\Game;
 use Src\Game\Domain\Entities\Hand;
 use Src\Game\Domain\Entities\Player;
 use Src\Game\Domain\Entities\Shoe;
+use Src\Game\Domain\Enum\GameState;
 use Src\Game\Domain\Services\Dealer;
 use Src\Game\Domain\ValueObjects\HandValue;
 use Src\Game\Domain\ValueObjects\Ids\BetId;
@@ -35,6 +36,10 @@ class GameFactory
             new Player(PlayerId::generate(), "John"),
             new Player(PlayerId::generate(), "Bob"),
             new Player(PlayerId::generate(), "Alex"),
+            new Player(PlayerId::generate(), "Michael"),
+            new Player(PlayerId::generate(), "Anna"),
+            new Player(PlayerId::generate(), "Alice"),
+            new Player(PlayerId::generate(), "Victoria"),
         ];
 
         $game = (new GameFactory)->create($players, $shoe);
@@ -69,13 +74,13 @@ class GameFactory
     public static function makeTestGameInDealerTurnStage(): Game
     {
         $game = self::makeTestGameInPlayersTurnStage();
-        $firstGamePlayer = $game->players()[array_key_first($game->players())];
-        while ($game->currentPlayer()->id()->equals($firstGamePlayer->id())){
-            $game->playerHit($game->currentPlayer()->id());
+
+        foreach ($game->players() as $player){
+            if (!$player->hand()->hasBlackjack()){
+                $game->playerStand($player->id());
+            }
         }
 
-        $game->playerStand($game->currentPlayer()->id());
-        $game->playerStand($game->currentPlayer()->id());
         return $game;
     }
 }
