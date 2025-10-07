@@ -23,6 +23,11 @@ final readonly class Money
         return new self($this->amount + $other->amount);
     }
 
+    public function setToZero(): self
+    {
+        return new self(0);
+    }
+
     public function amount(): int
     {
         return $this->amount;

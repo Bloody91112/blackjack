@@ -78,6 +78,11 @@ final class Player
         return $this->state === PlayerState::Standing;
     }
 
+    public function hasFinished(): bool
+    {
+        return $this->state === PlayerState::Finished;
+    }
+
     public function hit(Card $card): void
     {
         $this->hand->receiveCard($card);

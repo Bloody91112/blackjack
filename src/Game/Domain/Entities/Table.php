@@ -17,7 +17,7 @@ class Table
         private array $players = []
     ){}
 
-    private function join(Player $newPlayer): void
+    public function join(Player $newPlayer): void
     {
         foreach ($this->players as $player){
             if ($player->id()->equals($newPlayer->id())){
@@ -28,7 +28,7 @@ class Table
         $this->players[] = $newPlayer;
     }
 
-    private function startGame(): void
+    public function startGame(): void
     {
         if ($this->game !== null){
             throw new LogicException("Previous game is not finished.");
@@ -38,9 +38,24 @@ class Table
         $this->game->betStart();
     }
 
-    private function finishGame(): void
+    public function finishGame(): void
     {
+        if ($this->game === null){
+            throw new LogicException("There is no game to finish.");
+        }
+
         $this->game->finish();
         $this->shoe = $this->game->shoe();
+    }
+
+    /** @return array<Player> */
+    public function players(): array
+    {
+        return $this->players;
+    }
+
+    public function game(): ?Game
+    {
+        return $this->game;
     }
 }

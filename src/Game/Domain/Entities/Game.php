@@ -74,7 +74,6 @@ class Game
             throw new LogicException("Cant assign next player. Wrong game state: {$this->state()->value}");
         }
 
-
         if ($this->currentPlayerIndex !== null) {
             if ($this->currentPlayer()->isActive()) {
                 throw new LogicException("Previous player has not finished his turn yet.");
@@ -85,9 +84,7 @@ class Game
         }
 
         for ($i = $startIndex; $i < count($this->players); $i++) {
-            $player = $this->players[$i];
-
-            if ($player->state() === PlayerState::Finished) {
+            if ($this->players[$i]->hasFinished()) {
                 continue;
             }
 
@@ -201,8 +198,10 @@ class Game
     {
         $cards = [...$this->collectPlayersCards(), $this->dealerHand->returnCards()];
 
-        foreach ($cards as $dealerCard){
-            $this->shoe->collect($dealerCard);
+        foreach ($cards as $cardInHand){
+            foreach ($cardInHand as $card){
+                $this->shoe->collect($card);
+            }
         }
 
         $this->state = GameState::Finished;
