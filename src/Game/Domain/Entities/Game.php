@@ -14,6 +14,8 @@ class Game
     private GameState $state;
     private ?int $currentPlayerIndex = null;
 
+    public const DEALER_DRAW_UNTIL = 17;
+
     public function __construct(
         private GameId $id,
         private Shoe $shoe,
@@ -40,11 +42,11 @@ class Game
     public function playersTurnsStage(): void
     {
         foreach ($this->players as $player){
-            if ($player->state() !== PlayerState::PlacedABet){
+            if (!$player->placedABet()){
                 throw new DomainException("Cant start players turns, player {$player->id()->value()} is not placed a bet");
             }
 
-            if (count($player->hand()->cards()) !== 2){
+            if (!$player->receivedCards()){
                 throw new DomainException("Cant start players turns, player {$player->id()->value()} doesnt have 2 cards");
             }
         }
@@ -126,7 +128,7 @@ class Game
 
     public function placeOtherDealerCards(): void
     {
-        while ($this->dealerScore() < 17){
+        while ($this->dealerScore() < self::DEALER_DRAW_UNTIL){
             $this->placeDealerCard();
         }
     }

@@ -83,6 +83,16 @@ final class Player
         return $this->state === PlayerState::Finished;
     }
 
+    public function placedABet(): bool
+    {
+        return $this->state === PlayerState::PlacedABet;
+    }
+
+    public function receivedCards(): bool
+    {
+        return count($this->hand()->cards()) === 2;
+    }
+
     public function hit(Card $card): void
     {
         $this->hand->receiveCard($card);
