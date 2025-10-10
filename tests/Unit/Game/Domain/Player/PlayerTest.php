@@ -29,7 +29,7 @@ class PlayerTest extends TestCase
     {
         parent::setUp();
         $this->player = new Player(PlayerId::generate(), "John");
-        $this->hand = new Hand(HandId::generate(), new HandValue());
+        $this->hand = new Hand(HandId::generate());
         $this->bet = new Bet(BetId::generate(), new Money(100));
     }
 
@@ -147,7 +147,7 @@ class PlayerTest extends TestCase
     public function test_it_throws_exception_on_second_hand_assign(): void
     {
         $this->player->assignHand($this->hand);
-        $secondHand = new Hand(HandId::generate(), new HandValue());
+        $secondHand = new Hand(HandId::generate());
 
         $this->expectException(LogicException::class);
         $this->player->assignHand($secondHand);

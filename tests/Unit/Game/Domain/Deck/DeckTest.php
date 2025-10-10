@@ -47,7 +47,7 @@ class DeckTest extends TestCase
 
     public function test_equal_decks_are_equal(): void
     {
-        $deck = (new DeckFactory())->createStandardDeck();
+        $deck = DeckFactory::createStandardDeck();
         $this->assertTrue($deck->equalsTo($this->deck));
     }
 

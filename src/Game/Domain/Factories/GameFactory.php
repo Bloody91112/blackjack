@@ -28,7 +28,7 @@ class GameFactory
     public function create(array $players, Shoe $shoe): Game
     {
         $shoe->shuffle();
-        $dealerHand = new Hand(HandId::generate(), new HandValue());
+        $dealerHand = new Hand(HandId::generate());
         return new Game(GameId::generate(), $shoe, $dealerHand, $players);
     }
 
@@ -37,7 +37,7 @@ class GameFactory
         $game = new Game(
             GameId::generate(),
             (new ShoeFactory(new DeckFactory))->create(self::DECKS_IN_SHOE_IN_TEST_GAME),
-            new Hand(HandId::generate(), new HandValue()),
+            new Hand(HandId::generate()),
             [
                 new Player(PlayerId::generate(), "John"),
                 new Player(PlayerId::generate(), "Bob"),

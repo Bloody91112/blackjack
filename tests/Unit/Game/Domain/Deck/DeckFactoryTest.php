@@ -18,13 +18,13 @@ class DeckFactoryTest extends TestCase
 
     public function test_it_correctly_creates_standard_deck(): void
     {
-        $deck = $this->deckFactory->createStandardDeck();
+        $deck = DeckFactory::createStandardDeck();
         $this->assertSame(count($deck->cards()), 52);
     }
 
     public function test_it_has_unique_cards(): void
     {
-        $deck = $this->deckFactory->createStandardDeck();
+        $deck = DeckFactory::createStandardDeck();
 
         $hashes = [];
         foreach ($deck->cards() as $card) {

@@ -9,7 +9,7 @@ use Src\Game\Domain\ValueObjects\Suit;
 
 class DeckFactory
 {
-    public function createStandardDeck(): Deck
+    public static function createStandardDeck(): Deck
     {
         $cards = [];
         foreach (Suit::all() as $suit) {

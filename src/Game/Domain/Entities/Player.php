@@ -139,6 +139,11 @@ final class Player
         $this->hand = $hand;
     }
 
+    public function hasHand(): bool
+    {
+        return $this->hand !== null;
+    }
+
     public function hand(): Hand
     {
         if ($this->hand === null){

@@ -24,7 +24,7 @@ class HandTest extends TestCase
             new Card(Rank::ten(), Suit::diamonds()),
         ];
 
-        $this->hand = new Hand(HandId::generate(), new HandValue());
+        $this->hand = new Hand(HandId::generate());
     }
 
     public function test_it_correctly_adds_cards(): void

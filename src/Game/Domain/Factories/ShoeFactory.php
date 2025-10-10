@@ -15,7 +15,7 @@ class ShoeFactory
     {
         $decks = [];
         for ($i = 0; $i < $numberOfDecks; $i++) {
-            $decks[] = $this->deckFactory->createStandardDeck();
+            $decks[] = DeckFactory::createStandardDeck();
         }
         return new Shoe(ShoeId::generate(), $decks);
     }

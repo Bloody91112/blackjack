@@ -57,6 +57,18 @@ class Shoe
         return array_shift($this->cards);
     }
 
+    public function drawConcrete(Card $card): ?Card
+    {
+        foreach ($this->cards as $key => $shoeCard){
+            if ($shoeCard->equalsTo($card)){
+                unset($this->cards[$key]);
+                return $shoeCard;
+            }
+        }
+
+        throw new LogicException("Card $card not found");
+    }
+
     public function collect(Card $card): void
     {
         $this->cards[] = $card;

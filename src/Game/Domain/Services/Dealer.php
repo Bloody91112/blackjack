@@ -14,7 +14,7 @@ class Dealer
     public function dealInitialCards(Game $game): void
     {
         foreach ($game->players() as $player){
-            $player->assignHand(new Hand(HandId::generate(), new HandValue()));
+            $player->assignHand(new Hand(HandId::generate()));
 
             $player->hand()->receiveCard($game->shoe()->draw());
             $player->hand()->receiveCard($game->shoe()->draw());

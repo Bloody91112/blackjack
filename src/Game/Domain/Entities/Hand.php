@@ -10,14 +10,16 @@ use Src\Game\Domain\ValueObjects\Ids\HandId;
 
 class Hand
 {
-    /** @var array<Card> */
-    private array $cards = [];
+
+    public HandValue $value;
+
     public function __construct(
         private HandId $id,
-        private HandValue $value
+        /** @var array<Card> */
+        private array $cards = []
     ){
         $this->id = new HandId(Uuid::uuid4()->toString());
-        $this->value = new HandValue();
+        $this->value = new HandValue($cards);
     }
 
     public function receiveCard(Card $card): void
@@ -41,7 +43,7 @@ class Hand
         return $cards;
     }
 
-    public function id(): string
+    public function id(): HandId
     {
         return $this->id;
     }
@@ -51,6 +53,7 @@ class Hand
         return $this->value;
     }
 
+    /** @return array<Card> */
     public function cards(): array
     {
         return $this->cards;

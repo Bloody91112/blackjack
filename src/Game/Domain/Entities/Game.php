@@ -11,7 +11,7 @@ use Src\Game\Domain\ValueObjects\Ids\PlayerId;
 
 class Game
 {
-    private GameState $state;
+    private GameState $state = GameState::Created;
     private ?int $currentPlayerIndex = null;
 
     public const DEALER_DRAW_UNTIL = 17;
@@ -26,9 +26,6 @@ class Game
         if (empty($this->players)){
             throw new LogicException("Cant create a game. There are no players to play.");
         }
-
-        $this->state = GameState::Created;
-
     }
 
     public function betStart(): void

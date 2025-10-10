@@ -46,7 +46,7 @@ class GamePlayersTurnStageTest extends TestCase
         foreach ($game->players() as $player) {
             $bet = new Bet(BetId::generate(), new Money(100));
             $game->placeBet($player->id(), $bet);
-            $player->assignHand(new Hand(HandId::generate(), new HandValue()));
+            $player->assignHand(new Hand(HandId::generate()));
         }
 
         $this->expectException(DomainException::class);
@@ -59,7 +59,7 @@ class GamePlayersTurnStageTest extends TestCase
         foreach ($game->players() as $player) {
             $bet = new Bet(BetId::generate(), new Money(100));
             $game->placeBet($player->id(), $bet);
-            $player->assignHand(new Hand(HandId::generate(), new HandValue()));
+            $player->assignHand(new Hand(HandId::generate()));
             $player->hand()->receiveCard($game->shoe()->draw());
             $player->hand()->receiveCard($game->shoe()->draw());
         }

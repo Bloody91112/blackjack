@@ -2,6 +2,7 @@
 
 namespace Src\Game\Domain\Entities;
 
+use DomainException;
 use LogicException;
 use Src\Game\Domain\Factories\GameFactory;
 use Src\Game\Domain\ValueObjects\Ids\TableId;
@@ -24,6 +25,11 @@ class Table
                 throw new LogicException("Player " . $player->id()->value() . " already at the table");
             }
         }
+
+        if (count($this->players) === 8){
+            throw new DomainException("Maximum players at the table");
+        }
+
         $newPlayer->joinTable();
         $this->players[] = $newPlayer;
     }
